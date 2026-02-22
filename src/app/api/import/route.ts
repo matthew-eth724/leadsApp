@@ -15,6 +15,18 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing rows or mapping' }, { status: 400 })
         }
 
+        // If no stage was chosen in the UI, default to the first stage (lowest order)
+        let defaultStageId: string | null = stage_id || null
+        if (!defaultStageId) {
+            const { data: firstStage } = await supabase
+                .from('stages')
+                .select('id')
+                .order('"order"', { ascending: true })
+                .limit(1)
+                .single()
+            defaultStageId = firstStage?.id ?? null
+        }
+
         const leads = rows.map((row: Record<string, string>) => {
             // Build custom_fields object from customFieldMappings
             const custom_fields: Record<string, string> = {}
@@ -31,7 +43,7 @@ export async function POST(request: NextRequest) {
                 phone: row[mapping.phone] || null,
                 company: row[mapping.company] || null,
                 source: row[mapping.source] || null,
-                stage_id: stage_id || null,
+                stage_id: defaultStageId,
                 value: row[mapping.value] ? parseFloat(row[mapping.value]) : null,
                 tags: row[mapping.tags] || null,
                 custom_fields,
