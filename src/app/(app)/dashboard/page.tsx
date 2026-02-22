@@ -51,10 +51,11 @@ export default function DashboardPage() {
             )
             const pipelineValue = openLeads.reduce((sum: number, l: any) => sum + ((l.value as number | null) ?? 0), 0)
 
-            // Pipeline chart data
+            // Pipeline chart data — include color so each bar matches its stage
             const pipelineData = (stages ?? []).map((s: any) => ({
                 name: s.name,
                 count: s.leads?.length ?? 0,
+                color: s.color ?? '#6366f1',
                 value: (s.leads ?? []).reduce((sum: number, l: any) => sum + ((l.value as number | null) ?? 0), 0),
             }))
 
@@ -167,10 +168,13 @@ export default function DashboardPage() {
                                 />
                                 <Bar
                                     dataKey="count"
-                                    fill="#6366f1"
                                     radius={[8, 8, 8, 8]}
                                     barSize={40}
-                                />
+                                >
+                                    {(stats?.pipelineData ?? []).map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color ?? '#6366f1'} />
+                                    ))}
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
