@@ -237,7 +237,7 @@ export function LeadDetail({ leadId }: LeadDetailProps) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <NoteList notes={lead.notes ?? []} leadId={leadId} />
-                            <NoteForm leadId={leadId} />
+                            <NoteForm leadId={leadId} leadName={lead.name} />
                         </CardContent>
                     </Card>
                 </div>

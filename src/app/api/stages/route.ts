@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient, getServerUserId } from '@/lib/supabase-server'
 import { stageSchema } from '@/lib/validations'
 
 export async function GET() {
@@ -20,6 +20,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const supabase = await createServerSupabaseClient()
+        let userId: string
+        try { userId = await getServerUserId() } catch { return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 }) }
         const body = await request.json()
         const parsed = stageSchema.safeParse(body)
         if (!parsed.success) {
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
         }
         const { data: stage, error } = await supabase
             .from('stages')
-            .insert(parsed.data)
+            .insert({ ...parsed.data, user_id: userId })
             .select()
             .single()
 

@@ -14,6 +14,8 @@ import { Users, TrendingUp, Trophy, DollarSign, Calendar, Clock } from 'lucide-r
 import { isToday, isPast, parseISO } from 'date-fns'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { CalendarWidget } from '@/components/dashboard/CalendarWidget'
+import { FollowUpsWidget } from '@/components/dashboard/FollowUpsWidget'
 
 export default function DashboardPage() {
     const supabase = createClient()
@@ -318,6 +320,11 @@ export default function DashboardPage() {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
+            {/* Bottom widgets: follow-ups + calendar side by side on larger screens */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <FollowUpsWidget />
+                <CalendarWidget />
             </div>
         </div>
     )

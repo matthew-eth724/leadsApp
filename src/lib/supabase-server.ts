@@ -9,7 +9,25 @@ export const createServerSupabaseClient = async () => {
         {
             cookies: {
                 getAll: () => cookieStore.getAll(),
+                setAll: (cookiesToSet) => {
+                    try {
+                        cookiesToSet.forEach(({ name, value, options }) =>
+                            cookieStore.set(name, value, options)
+                        )
+                    } catch {
+                        // setAll called from a Server Component — cookies are read-only,
+                        // but the middleware handles session refresh so this is safe to ignore.
+                    }
+                },
             },
         }
     )
+}
+
+/** Helper — get the current user's ID from the server session. Throws if not authenticated. */
+export const getServerUserId = async (): Promise<string> => {
+    const supabase = await createServerSupabaseClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) throw new Error('Unauthenticated')
+    return session.user.id
 }

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
     Users,
     Kanban,
@@ -11,7 +11,8 @@ import {
     Plus,
     ChevronLeft,
     ChevronRight,
-    Target
+    Target,
+    LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -29,8 +30,20 @@ const navItems = [
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false)
     const [addLeadOpen, setAddLeadOpen] = useState(false)
+    const [userEmail, setUserEmail] = useState<string | null>(null)
     const pathname = usePathname()
+    const router = useRouter()
     const supabase = createClient()
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => setUserEmail(data.user?.email ?? null))
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut()
+        router.push('/login')
+        router.refresh()
+    }
 
     const { data: leadCount } = useQuery({
         queryKey: ['lead-count'],
@@ -116,8 +129,27 @@ export function Sidebar() {
                         })}
                     </nav>
 
+                    {/* User Menu */}
+                    <div className="px-4 pb-2 border-t border-white/5 mt-auto pt-4">
+                        {!collapsed && userEmail && (
+                            <div className="flex items-center gap-2 px-2 mb-2">
+                                <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
+                                    <span className="text-[11px] font-bold text-primary uppercase">{userEmail[0]}</span>
+                                </div>
+                                <span className="text-xs text-slate-400 truncate">{userEmail}</span>
+                            </div>
+                        )}
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors group"
+                        >
+                            <LogOut className="w-4 h-4 shrink-0" />
+                            {!collapsed && <span className="text-sm font-medium">Sign out</span>}
+                        </button>
+                    </div>
+
                     {/* Collapse Controls */}
-                    <div className="p-4 border-t border-white/5 mt-auto">
+                    <div className="p-4 border-t border-white/5">
                         <button
                             onClick={() => setCollapsed(!collapsed)}
                             className="flex items-center justify-center w-full p-3 rounded-2xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors group"

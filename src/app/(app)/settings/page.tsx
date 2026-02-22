@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { GoogleIntegration } from '@/components/settings/GoogleIntegration'
 
 interface Stage { id: string; name: string; color: string; order: number }
 interface FieldDefinition {
@@ -258,6 +259,7 @@ export default function SettingsPage() {
                     <TabsTrigger value="fields">Custom Fields</TabsTrigger>
                     <TabsTrigger value="import">Import CSV</TabsTrigger>
                     <TabsTrigger value="export">Export CSV</TabsTrigger>
+                    <TabsTrigger value="integrations">Integrations</TabsTrigger>
                 </TabsList>
 
                 {/* STAGES TAB */}
@@ -571,6 +573,19 @@ export default function SettingsPage() {
                             <Button onClick={handleExport} className="w-full sm:w-auto">
                                 <Download className="w-4 h-4 mr-1.5" /> Download CSV
                             </Button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* INTEGRATIONS TAB */}
+                <TabsContent value="integrations">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Integrations</CardTitle>
+                            <CardDescription>Connect third-party services to enhance your workflow.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <GoogleIntegration />
                         </CardContent>
                     </Card>
                 </TabsContent>
