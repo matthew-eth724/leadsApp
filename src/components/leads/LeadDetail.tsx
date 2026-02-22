@@ -164,7 +164,7 @@ export function LeadDetail({ leadId }: LeadDetailProps) {
                                 {lead.phone && (
                                     <div className="flex items-center gap-2.5 text-sm">
                                         <Phone className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                        <a href={`tel:${lead.phone}`} className="text-slate-700">{lead.phone}</a>
+                                        <a href={`https://wa.me/234${lead.phone}`} className="text-slate-700">{lead.phone}</a>
                                     </div>
                                 )}
                                 {lead.value != null && (
