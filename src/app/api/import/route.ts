@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient, getServerUserId } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
     try {
         const supabase = await createServerSupabaseClient()
+        let userId: string
+        try { userId = await getServerUserId() } catch {
+            return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 })
+        }
         const body = await request.json()
         const { rows, mapping, stage_id, customFieldMappings } = body
 
@@ -31,6 +35,7 @@ export async function POST(request: NextRequest) {
                 value: row[mapping.value] ? parseFloat(row[mapping.value]) : null,
                 tags: row[mapping.tags] || null,
                 custom_fields,
+                user_id: userId,
             }
         }).filter((l: { name: string }) => l.name)
 
